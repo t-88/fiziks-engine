@@ -17,14 +17,18 @@ World world;
 int main() {
     sf::RenderWindow window(sf::VideoMode(800,600),"Fiziks",sf::Style::Titlebar);
     window.setPosition(sf::Vector2i((sf::VideoMode::getDesktopMode().width - window.getSize().x) / 2,(sf::VideoMode::getDesktopMode().height - window.getSize().y) / 2));
-    
+    window.setFramerateLimit(60);
+    sf::Clock clock;
+    float dt = 0;
 
-    world.addBody(new Rect(Vec2(100,100),Vec2(50,50)));
-
+    Rect rect = Rect(Vec2(100,100),Vec2(50,50));
+    world.addBody(&rect);
 
 
     while(window.isOpen()) {
         sf::Event event;
+        dt = clock.restart().asSeconds() * 60;
+        
         while(window.pollEvent(event)) {
             if(event.type == sf::Event::Closed) {
                 window.close();
@@ -35,8 +39,17 @@ int main() {
             }
         }
 
-        window.clear(sf::Color(0x181818FF));
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            rect.applyForce(Vec2(-500,0));
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            rect.applyForce(Vec2(500,0));
+        }
         
+
+        window.clear(sf::Color(0x181818FF));
+        world.simulate(dt);
+
+
         for(int i = 0; i < world.bodies.size(); i++) {
             Vec2 size = static_cast<Rect*>(world.bodies[i])->size;
             Vec2 pos = static_cast<Rect*>(world.bodies[i])->pos;

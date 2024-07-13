@@ -7,14 +7,16 @@
 
 class Body {
 public:
+    std::string uuid;
     Vec2 pos;
     Vec2 vel;
-    float mass, invMass;
     Vec2 force;
-    std::string uuid;
+    float mass, invMass;
+    
 
     ~Body();
     Body(Vec2 pos , float mass);
+    void applyForce(Vec2 force);
 };
 
 #endif // Body_H

@@ -13,6 +13,7 @@ class World {
 public:
     std::vector<Body*> bodies;
     std::map<std::string,Arbiter> arbiters;
+    float dt;
 
     ~World();
     World();
@@ -22,7 +23,14 @@ public:
 
 
     // Sim Loop
-    void collisionsCheck();
+    void simulate(float dt);
+    void checkCollisions();
+    void applyForces();
+    void solveConstrains();
+    void updatePositions();
+
+
+    
 };
 
 #endif // WORLD_H

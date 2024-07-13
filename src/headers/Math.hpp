@@ -15,6 +15,8 @@ public:
     ~Vec2();
     Vec2();
     Vec2(float x, float y);
+    Vec2 operator *(float other) { return Vec2(x * other,y * other); }
+    void operator +=(Vec2 other) { x += other.x; y += other.y; }
 };
 
 // Functions

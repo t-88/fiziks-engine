@@ -11,9 +11,17 @@ void World::addBody(Body* body) {
 
 
 // Sim Loop
-void World::collisionsCheck() {
+void World::simulate(float dt) {
+    this->dt = dt;
+
+    checkCollisions();
+    applyForces();
+    solveConstrains();
+    updatePositions();
+}
+
+void World::checkCollisions() {
     //TODO: improve O(N^2) broad collision
-    
     for(int i = 0; i < bodies.size(); i++) {
         for(int j = 0; j < bodies.size(); j++) {
             if(i == j) continue;    // skip self
@@ -27,5 +35,19 @@ void World::collisionsCheck() {
             }
         }
     }
+}
+void World::applyForces() {
+    for(auto body : bodies) {
+        Vec2 acc = body->force * body->invMass;
+        body->vel += acc * dt;
+    }
+}
+void World::solveConstrains() {
 
+}
+void World::updatePositions() {
+    for(auto body : bodies) {
+        body->pos += body->vel * dt;
+        body->force = Vec2(0,0);
+    }
 }
