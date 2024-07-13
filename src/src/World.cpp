@@ -39,7 +39,10 @@ void World::checkCollisions() {
 void World::applyForces() {
     for(auto body : bodies) {
         Vec2 acc = body->force * body->invMass;
+        float ang_acc = body->torque * body->invIneria;
+
         body->vel += acc * dt;
+        body->ang_vel += ang_acc * dt;
     }
 }
 void World::solveConstrains() {
@@ -48,6 +51,9 @@ void World::solveConstrains() {
 void World::updatePositions() {
     for(auto body : bodies) {
         body->pos += body->vel * dt;
+        body->rotation += body->ang_vel * dt;
+        
         body->force = Vec2(0,0);
+        body->torque = 0;
     }
 }

@@ -80,3 +80,9 @@ joints are objects that connect rigid bodies togther, if we wanna model a human 
 p: linear momentum    
 F: force
 
+### Angular Effects
+- Ω 'omega' orientation 
+- ω 'lowercase omega' angular velocity
+- α 'alpha' angular acceleration     
+velocity of a single point is `v_B = ω * r_⊥`     
+Chasles’Theorem says we can break any rigidbody displacement as a combanation of linear movement and angular rotation

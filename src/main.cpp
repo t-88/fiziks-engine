@@ -21,7 +21,7 @@ int main() {
     sf::Clock clock;
     float dt = 0;
 
-    Rect rect = Rect(Vec2(100,100),Vec2(50,50));
+    Rect rect = Rect(Vec2(100,100),Vec2(5,5));
     world.addBody(&rect);
 
 
@@ -40,10 +40,18 @@ int main() {
         }
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-            rect.applyForce(Vec2(-500,0));
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            rect.applyForce(Vec2(500,0));
+            rect.applyForce(Vec2(-10,0));
+        } 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            rect.applyForce(Vec2(10,0));
         }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) { 
+            rect.applyTorque(20);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) { 
+            rect.applyTorque(-20);
+        }
+
         
 
         window.clear(sf::Color(0x181818FF));
@@ -52,15 +60,24 @@ int main() {
 
         for(int i = 0; i < world.bodies.size(); i++) {
             Vec2 size = static_cast<Rect*>(world.bodies[i])->size;
-            Vec2 pos = static_cast<Rect*>(world.bodies[i])->pos;
+            Vec2 pos = world.bodies[i]->pos;
+            float rotation = world.bodies[i]->rotation;
 
-            sf::RectangleShape rect(sf::Vector2f(size.x,size.y));
+            sf::RectangleShape rect(sf::Vector2f(size.x * 10,size.y  * 10));
             rect.setPosition(sf::Vector2f(pos.x,pos.y));
             rect.setOutlineColor(sf::Color::White);
             rect.setOutlineThickness(1);
+            rect.setOrigin(size.x * 10/ 2, size.y * 10 / 2);
             rect.setFillColor(sf::Color::Transparent);
+            rect.setRotation(-rotation);
+
+
+            sf::CircleShape circle(2);
+            circle.setPosition(sf::Vector2f(pos.x - 1,pos.y - 1));
+            circle.setFillColor(sf::Color(0xFFA500FF));
             
             window.draw(rect);
+            window.draw(circle);
         }
 
         window.display();
