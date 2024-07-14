@@ -8,7 +8,27 @@ Rect::Rect(Vec2 pos, Vec2 size) : Body(pos,size.x * size.y) ,  size(size)  {
     invIneria = 1.f/inertia;
 }
 
+const std::array<Vec2,4>& Rect::getPoints()  {
+    points[0] = Vec2(+size.x / 2,-size.y / 2);
+    points[1] = Vec2(-size.x / 2,-size.y / 2);
+    points[2] = Vec2(-size.x / 2,+size.y / 2);
+    points[3] = Vec2(+size.x / 2,+size.y / 2);
+    
 
-bool AABB(Rect a, Rect b) {
-    return a.pos.x + a.size.x > b.pos.x &&  a.pos.y + a.size.y > b.pos.y && b.pos.x + b.size.x > a.pos.x && b.pos.y + b.size.y > a.pos.y; 
+    for(int i = 0; i < 4; i++) {
+        points[i] = Vec2(points[i].x * cos(-rotation * 3.14f / 180.f) - points[i].y * sin(-rotation * 3.14f / 180.f), 
+                         points[i].x * sin(-rotation * 3.14f / 180.f) + points[i].y * cos(-rotation * 3.14f / 180.f));
+    }
+
+    points[0] += Vec2(pos.x,pos.y);
+    points[1] += Vec2(pos.x,pos.y);
+    points[2] += Vec2(pos.x,pos.y);
+    points[3] += Vec2(pos.x,pos.y);    
+
+
+
+    return points;
 }
+
+
+

@@ -39,6 +39,7 @@ void World::checkCollisions() {
 void World::applyForces() {
     for(auto body : bodies) {
         Vec2 acc = body->force * body->invMass;
+
         float ang_acc = body->torque * body->invIneria;
 
         body->vel += acc * dt;

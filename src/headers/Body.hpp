@@ -5,6 +5,12 @@
 #include "Math.hpp"
 
 
+
+//TODO: scaling is mmmmmm
+#define FORCE_SCALE 100
+#define TORQUE_SCALE 50000000
+
+
 class Body {
 public:
     std::string uuid;
@@ -19,6 +25,7 @@ public:
     float mass, invMass;
     float inertia, invIneria;
     
+
 
     ~Body();
     Body(Vec2 pos , float mass);

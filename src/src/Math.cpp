@@ -5,6 +5,13 @@
 Vec2::~Vec2() {}
 Vec2::Vec2() : x(0), y(0) {}
 Vec2::Vec2(float x = 0, float y = 0) : x(x), y(y) {}
+Vec2 Vec2::normalize() {
+    Vec2 out = *this; 
+    float mag = sqrt(out.x * out.x + out.y * out.y);
+    out.x /= mag;
+    out.y /= mag;
+    return out;
+}
 
 
 // Functions

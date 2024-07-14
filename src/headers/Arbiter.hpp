@@ -23,6 +23,7 @@ public:
     Body* a;
     Body* b;
     std::vector<Vec2> contact;
+    Vec2 MTV;
 
     ~Arbiter();
     Arbiter(Body* a, Body* b);
