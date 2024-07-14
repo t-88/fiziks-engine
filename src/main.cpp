@@ -25,7 +25,7 @@ int main() {
 
     Rect rect = Rect(Vec2(100,100),Vec2(50,50));
     world.addBody(&rect);
-    world.addBody(new  Rect(Vec2(200,200),Vec2(30,30)));
+    world.addBody(new  Rect(Vec2(400,500),Vec2(680,50),true));
 
 
     while(window.isOpen()) {
@@ -42,24 +42,26 @@ int main() {
             }
         }
 
-#if 0
+    rect.applyForce(Vec2(0,10));
+
+#if 1
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-            world.bodies[1]->applyForce(Vec2(-5,0));
+            world.bodies[0]->applyForce(Vec2(-5,0));
         } 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            world.bodies[1]->applyForce(Vec2(5,0));
+            world.bodies[0]->applyForce(Vec2(5,0));
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-            world.bodies[1]->applyForce(Vec2(0,-5));
+            world.bodies[0]->applyForce(Vec2(0,-20));
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-            world.bodies[1]->applyForce(Vec2(0,5));
+            world.bodies[0]->applyForce(Vec2(0,5));
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) { 
-            world.bodies[1]->applyTorque(4);
+            world.bodies[0]->applyTorque(4);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) { 
-            world.bodies[1]->applyTorque(-4);
+            world.bodies[0]->applyTorque(-4);
         }
 
 #else
@@ -84,10 +86,10 @@ int main() {
 #endif
         
 
-        window.clear(sf::Color(0x181818FF));
         world.simulate(dt);
 
 
+        window.clear(sf::Color(0x181818FF));
         for(int i = 0; i < world.bodies.size(); i++) {
             Vec2 size = static_cast<Rect*>(world.bodies[i])->size;
             Vec2 pos = world.bodies[i]->pos;
@@ -119,6 +121,17 @@ int main() {
             window.draw(circle);
             // window.draw(convex);
         }
+
+        for(const auto& elem : world.arbiters) {
+            for(int i = 0; i < elem.second.contact.first; i++) {
+                // printf("%f\n",elem.second.contact.second[i].x);
+                sf::CircleShape circle(2);
+                circle.setPosition(sf::Vector2f(elem.second.contact.second[i].x,elem.second.contact.second[i].y));
+                circle.setFillColor(sf::Color::Yellow);
+                window.draw(circle);
+            }
+        }
+
 
         window.display();
         

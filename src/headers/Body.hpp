@@ -24,11 +24,13 @@ public:
     
     float mass, invMass;
     float inertia, invIneria;
+
+    bool isStatic = false;
     
 
 
     ~Body();
-    Body(Vec2 pos , float mass);
+    Body(Vec2 pos , float mass,bool isStatic);
     void applyForce(Vec2 f);
     void applyTorque(float t);
 };

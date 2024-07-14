@@ -3,9 +3,17 @@
 #include <math.h>
 
 Rect::~Rect(){ }
-Rect::Rect(Vec2 pos, Vec2 size) : Body(pos,size.x * size.y) ,  size(size)  { 
+Rect::Rect(Vec2 pos, Vec2 size,bool isStatic) : Body(pos,size.x * size.y,isStatic) ,  size(size)  {     
     inertia = mass *  pow(size.x,2)  * pow(size.y,2) / 12;
     invIneria = 1.f/inertia;
+
+    if(isStatic) {
+        mass = 0;
+        invMass = 0;
+        inertia = 0;
+        invIneria = 0;
+    }
+
 }
 
 const std::array<Vec2,4>& Rect::getPoints()  {

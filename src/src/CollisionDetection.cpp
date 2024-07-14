@@ -21,7 +21,7 @@ namespace CollisionDetection
         return bounds;
     }
 
-    bool SAT(Rect a, Rect b, Vec2& MTV) {
+    bool SAT(Rect a, Rect b, Vec2& MTV,float& overlap) {
         std::array<Vec2,4> a_points = a.getPoints();
         std::array<Vec2,4> b_points = b.getPoints();
 
@@ -63,8 +63,7 @@ namespace CollisionDetection
         }
 
 
-        MTV *= min_overlap;
-
+        overlap = min_overlap;
         // from a to b 
         Vec2 diff = b.pos - a.pos;
         if(diff * MTV < 0) {
@@ -73,4 +72,73 @@ namespace CollisionDetection
 
         return true;
     }    
+
+
+    static Vec2 point_line_closest_point(Vec2 b, Vec2 a, Vec2 c, float& distance) {
+        Vec2 ab = (b - a);
+        Vec2 ac = (c - a);
+        float proj = ac * ab / (ab * ab);
+        Vec2 close_point;
+        if(proj < 0) {
+            close_point = a;
+        } else if (proj > 1) {
+            close_point = b;
+        } else {
+            close_point = a + ab * proj;
+        }
+        distance = (c - close_point).length();
+        return close_point;
+    }
+
+    static bool equal_floats(float a , float b) {
+        #define EPSILON 0.001
+        return std::abs(a - b) <= EPSILON;
+    }
+
+
+
+    std::pair<int,std::array<Vec2,2>> getContactPoints(Rect a, Rect b) {
+        std::array<Vec2,4> a_points = a.getPoints();
+        std::array<Vec2,4> b_points = b.getPoints();
+
+        std::pair<int,std::array<Vec2,2>> contact_points;
+        contact_points.first = 0;
+        float min_distance = std::numeric_limits<float>::max();
+
+        for(int i = 0; i < 4; i++) {
+            for(int j = 0; j < 4; j++) {
+                float distance;
+                Vec2 closest_point = point_line_closest_point(b_points[j],b_points[(j + 1) % 4],a_points[i],distance);
+                if(equal_floats(min_distance,distance)) {
+                    contact_points.first = 2;
+                    contact_points.second[1] = closest_point;
+                }
+                else if(min_distance >= distance) {
+                    min_distance = distance;
+                    contact_points.first = 1;
+                    contact_points.second[0] = closest_point;
+                }
+            }
+        }
+
+        for(int i = 0; i < 4; i++) {
+            for(int j = 0; j < 4; j++) {
+                float distance;
+                Vec2 closest_point = point_line_closest_point(a_points[j],a_points[(j + 1) % 4],b_points[i],distance);
+                if(equal_floats(min_distance,distance)) {
+                    contact_points.first = 2;
+                    contact_points.second[1] = closest_point;
+                }
+                else if(min_distance >= distance) {
+                    min_distance = distance;
+                    contact_points.first = 1;
+                    contact_points.second[0] = closest_point;
+                }
+            }
+        }
+
+
+        return contact_points;
+    }
+
 } 

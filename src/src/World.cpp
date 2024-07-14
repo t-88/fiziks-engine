@@ -1,4 +1,5 @@
 #include <string>
+#include "CollisionDetection.hpp"
 #include "World.hpp"
 
 
@@ -23,15 +24,37 @@ void World::simulate(float dt) {
 void World::checkCollisions() {
     //TODO: improve O(N^2) broad collision
     for(int i = 0; i < bodies.size(); i++) {
+        Body* a = bodies[i];
         for(int j = 0; j < bodies.size(); j++) {
+            Body* b = bodies[j];
             if(i == j) continue;    // skip self
-            if(bodies[i]->invMass == 0 && bodies[j]->invMass == 0) continue; // if both static do noth
+            if(a->isStatic && b->isStatic) continue; // if both static do noth
 
-            Arbiter arbiter(bodies[i],bodies[j]);
-            if(arbiter.contact.size() > 0) {
-                arbiters.insert(std::pair<std::string,Arbiter>(bodies[i]->uuid + bodies[j]->uuid, arbiter));
+            Arbiter arbiter(a,b);
+            if(arbiter.collided) {
+
+                if(a->isStatic) {
+                    b->pos += arbiter.collisionInfo.normal * arbiter.collisionInfo.overlap; 
+                } else if(b->isStatic) {
+                    a->pos -= arbiter.collisionInfo.normal * arbiter.collisionInfo.overlap; 
+                } else {
+                    a->pos -= arbiter.collisionInfo.normal * arbiter.collisionInfo.overlap / 2.f; 
+                    b->pos += arbiter.collisionInfo.normal * arbiter.collisionInfo.overlap / 2.f; 
+                }
+
+
+                arbiter.contact = CollisionDetection::getContactPoints(*static_cast<Rect*>(a),*static_cast<Rect*>(b));
+                arbiters.erase(a->uuid + b->uuid);
+                arbiters.insert(std::pair<std::string,Arbiter>(a->uuid + b->uuid, arbiter));
+
+                float restitution = 0.5;
+                float impulse = -(1 + restitution) * ((b->vel - a->vel) * arbiter.collisionInfo.normal) / (arbiter.collisionInfo.normal * arbiter.collisionInfo.normal * (a->invMass + b->invMass));
+                a->vel -= arbiter.collisionInfo.normal * impulse * a->invMass;
+                b->vel += arbiter.collisionInfo.normal * impulse * b->invMass;
+
+
             } else {
-                arbiters.erase(bodies[i]->uuid + bodies[j]->uuid);
+                arbiters.erase(a->uuid + b->uuid);
             }
         }
     }

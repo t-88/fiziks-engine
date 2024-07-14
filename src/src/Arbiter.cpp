@@ -7,10 +7,8 @@
 
 Arbiter::~Arbiter() {}
 Arbiter::Arbiter(Body* a, Body* b): a(a), b(b) {
-    if(CollisionDetection::SAT(*static_cast<Rect*>(a),*static_cast<Rect*>(b),MTV)) {
-        // printf("Cool\n");
-        a->pos -= MTV / 2;
-        b->pos += MTV / 2;
+    if(CollisionDetection::SAT(*static_cast<Rect*>(a),*static_cast<Rect*>(b),collisionInfo.normal,collisionInfo.overlap)) {
+        collided = true;
     }
 }
 
