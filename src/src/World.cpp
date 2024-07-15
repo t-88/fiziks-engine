@@ -1,7 +1,12 @@
 #include <string>
+#include <chrono>
+#include <thread>
 #include <math.h>
+
+#include "backend_wrapper.hpp"
 #include "CollisionDetection.hpp"
 #include "World.hpp"
+
 
 
 World::~World() {}
@@ -12,13 +17,28 @@ void World::addBody(Body* body) {
 }
 
 
+std::pair<bool,float> World::tick() {
+    static auto start = std::chrono::high_resolution_clock::now();
+    static auto end = start; 
+    const std::chrono::milliseconds frame_dur(1000 / BackWrapper::FPS);
+    start = std::chrono::high_resolution_clock::now();
+    std::chrono::milliseconds elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(start - end);
+    if(frame_dur > elapsed) {
+        std::this_thread::sleep_for(frame_dur - elapsed);
+        return std::pair<bool,float>(false,0);
+    }
+    float dt = std::chrono::duration_cast<std::chrono::milliseconds>(start - end).count() / 1000.f * BackWrapper::FPS;
+    end = start;
+    return std::pair<bool,float>(true,dt);
+}
+
 // Sim Loop
 void World::simulate(float dt) {
     this->dt = dt;
     
 
-    this->dt /= 4.f;
-    for(int i = 0; i < 4; i++) {
+    this->dt /= (float)iterations;
+    for(int i = 0; i < iterations; i++) {
         arbiters.clear();
         checkCollisions();
         solveConstrains();
