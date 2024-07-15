@@ -13,81 +13,86 @@
 
 #define SFML_WRAPPER_IMPLEMENTATION
 #include "sfml_wrapper.hpp"
-#define BACKEND_WRAPPER_IMPLEMENTATION
-#include "backend_wrapper.hpp"
+
 
 
 World world;
 
 
-void render_physics() {
-    while(!BackWrapper::exit_app) {
-        std::unique_lock<std::mutex> lock(BackWrapper::mtx_render_callbacks);
-            
-            BackWrapper::render_callbacks.clear();
-            for(Body* body: world.bodies) {
-                BackWrapper::render_callbacks.push_back(std::pair<RenderCallback,void*>(BackWrapper::render_rect,body));
-                BackWrapper::render_callbacks.push_back(std::pair<RenderCallback,void*>(BackWrapper::render_point,&body->pos));
-            }
-
-        lock.unlock();
-        BackWrapper::cnd_render_callback.notify_one();
-    }
-}
 
 void physics() {
-    world.addBody(new Rect(Vec2(100,400),Vec2(50,50)));
-    world.addBody(new Rect(Vec2(400,500),Vec2(680,50),0,true));
-    world.addBody(new Rect(Vec2(100,300),Vec2(200,5),0.2,true));
+    static bool left_pressed = false;
 
-
-    bool left_pressed = false;
-
-    while(!BackWrapper::exit_app) {
-        std::pair<bool, float> frame_info = world.tick();
-        bool ready = frame_info.first; 
-        float dt = frame_info.second; 
-        if(!ready) continue;
-
-
-        for(Body* body : world.bodies) {
-            body->applyForce(Vec2(0,10));
-        }
-
-        if(BackWrapper::key_pressed(BackWrapper::Keys::Left)) {
-            world.bodies[0]->applyForce(Vec2(-5,0));
-        } 
-        if (BackWrapper::key_pressed(BackWrapper::Keys::Right)) {
-            world.bodies[0]->applyForce(Vec2(5,0));
-        }
-        if (BackWrapper::key_pressed(BackWrapper::Keys::Up)) {
-            world.bodies[0]->applyForce(Vec2(0,-20));
-        }
-        if (BackWrapper::key_pressed(BackWrapper::Keys::Down)) {
-            world.bodies[0]->applyForce(Vec2(0,5));
-        }
-        if (BackWrapper::key_pressed(BackWrapper::Keys::R)) { 
-            world.bodies[0]->applyTorque(10);
-        }
-        if (BackWrapper::key_pressed(BackWrapper::Keys::F)) { 
-            world.bodies[0]->applyTorque(-10);
-        }        
-
-
-        if(!left_pressed && BackWrapper::mouse_down(0)) {
-            left_pressed = true;
-            world.addBody(new Rect(Vec2(BackWrapper::mouse_pos.x,BackWrapper::mouse_pos.y),Vec2(rand() % 100,rand() % 100),(rand() % 314) / 100.f));
-        } else if(!BackWrapper::mouse_down(0)) {
-            left_pressed = false;
-        }
-
-        world.simulate(dt);
+    for(Body* body : world.bodies) {
+        body->applyForce(Vec2(0,10));
     }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+        world.bodies[0]->applyForce(Vec2(-5,0));
+    } 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+        world.bodies[0]->applyForce(Vec2(5,0));
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+        world.bodies[0]->applyForce(Vec2(0,-20));
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+        world.bodies[0]->applyForce(Vec2(0,5));
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) { 
+        world.bodies[0]->applyTorque(10);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) { 
+        world.bodies[0]->applyTorque(-10);
+    }        
+    if(sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+        if(!left_pressed) {
+            world.addBody(new Rect(Vec2(sf::Mouse::getPosition(SfmlWrapper::window).x,sf::Mouse::getPosition(SfmlWrapper::window).y),
+                                   Vec2(rand() % 100 + 20,rand() % 100 + 20),
+                                   (rand() % 314) / 100.f)
+                        );
+            left_pressed = true;
+        }
+    } else {
+        left_pressed = false;
+    }
+    world.simulate(SfmlWrapper::dt);
 }
 
 int main() {
-    SfmlWrapper::use();
-    BackWrapper::init();
-    BackWrapper::run(physics,render_physics);
+    SfmlWrapper::window.create(sf::VideoMode(800,600),"Fiziks",sf::Style::Titlebar);
+    SfmlWrapper::window.setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width - SfmlWrapper::window.getSize().x, sf::VideoMode::getDesktopMode().height - SfmlWrapper::window.getSize().y) / 2);
+    SfmlWrapper::window.setFramerateLimit(FPS);
+
+
+    world.addBody(new Rect(Vec2(100,400),Vec2(50,50)));
+    world.addBody(new Rect(Vec2(400,500),Vec2(800,50),0,true));
+    world.addBody(new Rect(Vec2(0,300),Vec2(20,400),0,true));
+    world.addBody(new Rect(Vec2(800,300),Vec2(20,400),0,true));
+    world.addBody(new Rect(Vec2(100,300),Vec2(200,5),0.2,true));
+
+  
+
+    while(SfmlWrapper::window.isOpen()) {
+        while(SfmlWrapper::window.pollEvent(SfmlWrapper::event)) {
+            if((SfmlWrapper::event.type == sf::Event::Closed) || 
+               (SfmlWrapper::event.type == sf::Event::KeyPressed && SfmlWrapper::event.key.code == sf::Keyboard::Escape)) {
+                SfmlWrapper::window.close();
+            }
+        }
+
+        SfmlWrapper::dt  = SfmlWrapper::clock.restart().asSeconds() * FPS;
+        physics();
+
+        SfmlWrapper::window.clear(sf::Color(0x181818FF));
+        for(Body* body: world.bodies) {
+            Rect* rect = static_cast<Rect*>(body);
+            SfmlWrapper::render_rect(*rect);
+            SfmlWrapper::render_point(rect->pos);
+        }
+        
+        SfmlWrapper::window.display();
+    }
+
+
     return 0;
 }

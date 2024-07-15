@@ -4,23 +4,20 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "backend_wrapper.hpp"
 #include "Math.hpp"
 #include "Rect.hpp"
+
+const int FPS = 64;
 
 
 namespace SfmlWrapper {
     extern sf::RenderWindow window;
     extern sf::Clock clock;
     extern sf::Event event;
-    extern std::map<sf::Keyboard::Key,bool> keys;
+    extern float dt;
 
-    void init();
-    bool key_pressed(int k);
-    void render_rect(void* data);
-    void render_point(void* data);
-    void render();
-    void use();
+    void render_rect( Rect rect);
+    void render_point(Vec2 pos);
 }
 
 
@@ -33,33 +30,10 @@ namespace SfmlWrapper {
     sf::RenderWindow window;
     sf::Clock clock;
     sf::Event event;
-    std::map<sf::Keyboard::Key,bool> keys;
-    bool mouse_btns[3] = {false , false, false};
+    float dt;
 
 
-    void init() {
-        BackWrapper::input[BackWrapper::Keys::Left] = sf::Keyboard::Left;
-        BackWrapper::input[BackWrapper::Keys::Right] = sf::Keyboard::Right;
-        BackWrapper::input[BackWrapper::Keys::Up] = sf::Keyboard::Up;
-        BackWrapper::input[BackWrapper::Keys::Down] = sf::Keyboard::Down;
-        BackWrapper::input[BackWrapper::Keys::R] = sf::Keyboard::R;
-        BackWrapper::input[BackWrapper::Keys::F] = sf::Keyboard::F;        
-    }
-
-    bool key_pressed(int k) {
-        sf::Keyboard::Key key = (sf::Keyboard::Key)(BackWrapper::input[k]);
-        if(keys.find(key) == keys.end()) return false;
-        return keys.at(key);
-    }
-    bool mouse_down(int k) {
-        return mouse_btns[k];
-      
-    }    
-
-   
-
-    void render_rect(void* data) {
-        Rect r = *((Rect*)data); 
+    void render_rect(Rect r) {
         Vec2 size = r.size;
         Vec2 pos = r.pos;
         float rotation = r.rotation;
@@ -74,56 +48,13 @@ namespace SfmlWrapper {
         
         window.draw(rect);
     }
-    void render_point(void* data) { 
-        Vec2 pos = *((Vec2*)data);
-        
+
+    void render_point(Vec2 pos) { 
         sf::CircleShape circle(2);
         circle.setPosition(sf::Vector2f(pos.x - 1,pos.y - 1));
         circle.setFillColor(sf::Color(0xFFA500FF));
         
         window.draw(circle);
-    }    
-    void render() {
-        window.create(sf::VideoMode(800,600),"Fiziks",sf::Style::Titlebar);
-        window.setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width - window.getSize().x, sf::VideoMode::getDesktopMode().height - window.getSize().y) / 2);
-        window.setFramerateLimit(BackWrapper::FPS);
-        while(window.isOpen()) {
-            while(window.pollEvent(event)) {
-                if((event.type == sf::Event::Closed) || 
-                   (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)) {
-                    window.close();
-                }
-
-                if(event.type == sf::Event::KeyPressed) {
-                    keys[event.key.code] =  true;
-                } else {
-                    keys[event.key.code] =  false;
-                }
-            }
-            clock.restart().asSeconds() * BackWrapper::FPS;
-
-            mouse_btns[sf::Mouse::Button::Left] = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left); 
-            mouse_btns[sf::Mouse::Button::Right] = sf::Mouse::isButtonPressed(sf::Mouse::Button::Right); 
-            mouse_btns[sf::Mouse::Button::Middle] = sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle); 
-            BackWrapper::mouse_pos = Vec2(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y);
-
-            window.clear(sf::Color(0x181818FF));
-            
-            BackWrapper::render_the_render_list();
-            
-            
-            window.display();
-        }
-        BackWrapper::exit_app = true;
-    }    
-
-    void use() {
-        BackWrapper::init = SfmlWrapper::init;
-        BackWrapper::render = SfmlWrapper::render;
-        BackWrapper::render_rect = SfmlWrapper::render_rect;
-        BackWrapper::render_point = SfmlWrapper::render_point;
-        BackWrapper::key_pressed = SfmlWrapper::key_pressed;
-        BackWrapper::mouse_down = SfmlWrapper::mouse_down;
     }    
 }
 

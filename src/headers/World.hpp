@@ -14,7 +14,7 @@ public:
     std::vector<Body*> bodies;
     std::map<std::string,Arbiter> arbiters;
     float dt;
-    int iterations = 6;
+    int iterations = 10;
 
     ~World();
     World();
