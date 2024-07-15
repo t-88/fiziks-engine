@@ -1,6 +1,0 @@
-- [x] refactor code
-- [x] split renderer
-- [x] render multi threading
-- add circles
-- add time travel
-- add examples
