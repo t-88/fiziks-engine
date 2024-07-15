@@ -74,7 +74,7 @@ namespace CollisionDetection
     }    
 
 
-    static Vec2 point_line_closest_point(Vec2 b, Vec2 a, Vec2 c, float& distance) {
+    static Vec2 point_line_closest_point(Vec2 a, Vec2 b, Vec2 c, float& distance) {
         Vec2 ab = (b - a);
         Vec2 ac = (c - a);
         float proj = ac * ab / (ab * ab);
@@ -103,6 +103,8 @@ namespace CollisionDetection
 
         std::pair<int,std::array<Vec2,2>> contact_points;
         contact_points.first = 0;
+        contact_points.second[0] = Vec2(0,0);
+        contact_points.second[1] = Vec2(0,0);
         float min_distance = std::numeric_limits<float>::max();
 
         for(int i = 0; i < 4; i++) {
@@ -110,26 +112,29 @@ namespace CollisionDetection
                 float distance;
                 Vec2 closest_point = point_line_closest_point(b_points[j],b_points[(j + 1) % 4],a_points[i],distance);
                 if(equal_floats(min_distance,distance)) {
-                    contact_points.first = 2;
-                    contact_points.second[1] = closest_point;
+                    if(!(equal_floats(contact_points.second[0].x,closest_point.x) && equal_floats(contact_points.second[0].y,closest_point.y))) {
+                        contact_points.first = 2;
+                        contact_points.second[1] = closest_point;
+                    }
                 }
-                else if(min_distance >= distance) {
+                else if(min_distance > distance) {
                     min_distance = distance;
                     contact_points.first = 1;
                     contact_points.second[0] = closest_point;
                 }
             }
         }
-
         for(int i = 0; i < 4; i++) {
             for(int j = 0; j < 4; j++) {
                 float distance;
                 Vec2 closest_point = point_line_closest_point(a_points[j],a_points[(j + 1) % 4],b_points[i],distance);
                 if(equal_floats(min_distance,distance)) {
-                    contact_points.first = 2;
-                    contact_points.second[1] = closest_point;
+                    if(!(equal_floats(contact_points.second[0].x,closest_point.x) && equal_floats(contact_points.second[0].y,closest_point.y))) {
+                        contact_points.first = 2;
+                        contact_points.second[1] = closest_point;
+                    }
                 }
-                else if(min_distance >= distance) {
+                else if(min_distance > distance) {
                     min_distance = distance;
                     contact_points.first = 1;
                     contact_points.second[0] = closest_point;

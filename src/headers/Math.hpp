@@ -23,14 +23,14 @@ public:
     void operator *=(float other) { x *= other; y *= other; }
     Vec2& operator = (Vec2 other) { x = other.x; y= other.y; return *this; }
     Vec2 normal() { return Vec2(-y,x); }
+    float cross(Vec2 other) { return x*other.y - y*other.x; }
     float distance(Vec2 other) {return std::sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y));}
     float length() {return std::sqrt(x * x + y  * y);}
     Vec2 normalize();
 };
 
 inline Vec2 operator *(float a,Vec2 b) { return Vec2(b.x * a,b.y * a); }
-inline Vec2 operator *(Vec2 b,float a) { return Vec2(b.x * a,b.y * a); }
-inline Vec2 operator /(float a,Vec2 b) { return Vec2(b.x / a,b.y / a); }
+inline Vec2 operator *(Vec2 b,float a) { return a * b; }
 inline Vec2 operator /(Vec2 b,float a) { return Vec2(b.x / a,b.y / a); }
 
 

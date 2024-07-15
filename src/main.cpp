@@ -23,7 +23,7 @@ int main() {
     sf::Clock clock;
     float dt = 0;
 
-    Rect rect = Rect(Vec2(100,100),Vec2(50,50));
+    Rect rect = Rect(Vec2(100,400),Vec2(50,50));
     world.addBody(&rect);
     world.addBody(new  Rect(Vec2(400,500),Vec2(680,50),true));
 
@@ -42,9 +42,9 @@ int main() {
             }
         }
 
-    rect.applyForce(Vec2(0,10));
 
 #if 1
+        rect.applyForce(Vec2(0,10));
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
             world.bodies[0]->applyForce(Vec2(-5,0));
         } 
@@ -58,10 +58,10 @@ int main() {
             world.bodies[0]->applyForce(Vec2(0,5));
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) { 
-            world.bodies[0]->applyTorque(4);
+            world.bodies[0]->applyTorque(10);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) { 
-            world.bodies[0]->applyTorque(-4);
+            world.bodies[0]->applyTorque(-10);
         }
 
 #else
@@ -78,15 +78,13 @@ int main() {
             world.bodies[0]->pos.y += 5;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) { 
-            world.bodies[0]->rotation += 5;
+            world.bodies[0]->rotation += 0.1;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) { 
-            world.bodies[0]->rotation -= 5;
+            world.bodies[0]->rotation -= 0.1;
         }
 #endif
-        
-
-        world.simulate(dt);
+            world.simulate(dt);
 
 
         window.clear(sf::Color(0x181818FF));
@@ -95,38 +93,37 @@ int main() {
             Vec2 pos = world.bodies[i]->pos;
             float rotation = world.bodies[i]->rotation;
 
-            sf::RectangleShape rect(sf::Vector2f(size.x ,size.y));
+            sf::RectangleShape rect(sf::Vector2f(size.x - 2 ,size.y - 2));
             rect.setPosition(sf::Vector2f(pos.x,pos.y));
             rect.setOutlineColor(sf::Color::White);
             rect.setOutlineThickness(1);
             rect.setOrigin(size.x / 2, size.y / 2 );
             rect.setFillColor(sf::Color::Transparent);
-            rect.setRotation(-rotation);
+            rect.setRotation(rotation / 3.14f * 180.f );
 
 
             sf::CircleShape circle(2);
             circle.setPosition(sf::Vector2f(pos.x - 1,pos.y - 1));
             circle.setFillColor(sf::Color(0xFFA500FF));
 
-            std::array<Vec2,4> points = static_cast<Rect*>(world.bodies[i])->getPoints();
-            sf::ConvexShape convex;
-            convex.setPointCount(4);
-            for(int i = 0; i < 4; i++) {
-                convex.setPoint(i, sf::Vector2f(points[i].x, points[i].y));
-            }
-            convex.setFillColor(sf::Color::Red);
+            // std::array<Vec2,4> points = static_cast<Rect*>(world.bodies[i])->getPoints();
+            // sf::ConvexShape convex;
+            // convex.setPointCount(4);
+            // for(int i = 0; i < 4; i++) {
+                // convex.setPoint(i, sf::Vector2f(points[i].x, points[i].y));
+            // }
+            // window.draw(convex);
+
 
             
             window.draw(rect);
             window.draw(circle);
-            // window.draw(convex);
         }
 
         for(const auto& elem : world.arbiters) {
             for(int i = 0; i < elem.second.contact.first; i++) {
-                // printf("%f\n",elem.second.contact.second[i].x);
-                sf::CircleShape circle(2);
-                circle.setPosition(sf::Vector2f(elem.second.contact.second[i].x,elem.second.contact.second[i].y));
+                sf::CircleShape circle(4);
+                circle.setPosition(sf::Vector2f(elem.second.contact.second[i].x - 4,elem.second.contact.second[i].y - 4));
                 circle.setFillColor(sf::Color::Yellow);
                 window.draw(circle);
             }

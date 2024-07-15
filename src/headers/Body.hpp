@@ -8,7 +8,7 @@
 
 //TODO: scaling is mmmmmm
 #define FORCE_SCALE 100
-#define TORQUE_SCALE 50000000
+#define TORQUE_SCALE 100
 
 
 class Body {
