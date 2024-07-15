@@ -3,7 +3,7 @@
 #include <math.h>
 
 Rect::~Rect(){ }
-Rect::Rect(Vec2 pos, Vec2 size,bool isStatic) : Body(pos,size.x * size.y,isStatic) ,  size(size)  {     
+Rect::Rect(Vec2 pos, Vec2 size,float rotation,bool isStatic) : Body(pos,size.x * size.y,rotation,isStatic) ,  size(size)  {     
     inertia = mass *  (size.x * size.x  + size.y * size.y) / 12.f;
     invIneria = 1.f/inertia;
 

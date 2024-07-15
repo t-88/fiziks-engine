@@ -30,7 +30,7 @@ public:
 
 
     ~Body();
-    Body(Vec2 pos , float mass,bool isStatic);
+    Body(Vec2 pos , float mass,float rotation,bool isStatic);
     void applyForce(Vec2 f);
     void applyTorque(float t);
 };

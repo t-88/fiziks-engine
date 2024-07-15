@@ -1,6 +1,5 @@
-# Fiziks
-building a 2D fiziks engine
-
+# Fiziks Engine
+A 2d basic physics engine built for edicational purposes 
 
 
 ## Preview

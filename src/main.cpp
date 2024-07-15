@@ -37,7 +37,11 @@ void render_physics() {
 
 void physics() {
     world.addBody(new Rect(Vec2(100,400),Vec2(50,50)));
-    world.addBody(new Rect(Vec2(400,500),Vec2(680,50),true));
+    world.addBody(new Rect(Vec2(400,500),Vec2(680,50),0,true));
+    world.addBody(new Rect(Vec2(100,300),Vec2(200,5),0.2,true));
+
+
+    bool left_pressed = false;
 
     while(!BackWrapper::exit_app) {
         std::pair<bool, float> frame_info = world.tick();
@@ -45,7 +49,11 @@ void physics() {
         float dt = frame_info.second; 
         if(!ready) continue;
 
-        world.bodies[0]->applyForce(Vec2(0,10));
+
+        for(Body* body : world.bodies) {
+            body->applyForce(Vec2(0,10));
+        }
+
         if(BackWrapper::key_pressed(BackWrapper::Keys::Left)) {
             world.bodies[0]->applyForce(Vec2(-5,0));
         } 
@@ -64,6 +72,14 @@ void physics() {
         if (BackWrapper::key_pressed(BackWrapper::Keys::F)) { 
             world.bodies[0]->applyTorque(-10);
         }        
+
+
+        if(!left_pressed && BackWrapper::mouse_down(0)) {
+            left_pressed = true;
+            world.addBody(new Rect(Vec2(BackWrapper::mouse_pos.x,BackWrapper::mouse_pos.y),Vec2(rand() % 100,rand() % 100),(rand() % 314) / 100.f));
+        } else if(!BackWrapper::mouse_down(0)) {
+            left_pressed = false;
+        }
 
         world.simulate(dt);
     }

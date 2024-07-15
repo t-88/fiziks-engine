@@ -11,7 +11,7 @@ public:
 
 
     ~Rect();
-    Rect(Vec2 pos, Vec2 size,bool isStatic = false);
+    Rect(Vec2 pos, Vec2 size,float rotation = 0,bool isStatic = false);
     const std::array<Vec2,4>& getPoints(); 
 };
 

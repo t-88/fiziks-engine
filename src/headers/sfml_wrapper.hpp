@@ -34,6 +34,7 @@ namespace SfmlWrapper {
     sf::Clock clock;
     sf::Event event;
     std::map<sf::Keyboard::Key,bool> keys;
+    bool mouse_btns[3] = {false , false, false};
 
 
     void init() {
@@ -50,6 +51,10 @@ namespace SfmlWrapper {
         if(keys.find(key) == keys.end()) return false;
         return keys.at(key);
     }
+    bool mouse_down(int k) {
+        return mouse_btns[k];
+      
+    }    
 
    
 
@@ -96,8 +101,17 @@ namespace SfmlWrapper {
                 }
             }
             clock.restart().asSeconds() * BackWrapper::FPS;
+
+            mouse_btns[sf::Mouse::Button::Left] = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left); 
+            mouse_btns[sf::Mouse::Button::Right] = sf::Mouse::isButtonPressed(sf::Mouse::Button::Right); 
+            mouse_btns[sf::Mouse::Button::Middle] = sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle); 
+            BackWrapper::mouse_pos = Vec2(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y);
+
             window.clear(sf::Color(0x181818FF));
-                BackWrapper::render_the_render_list();
+            
+            BackWrapper::render_the_render_list();
+            
+            
             window.display();
         }
         BackWrapper::exit_app = true;
@@ -109,6 +123,7 @@ namespace SfmlWrapper {
         BackWrapper::render_rect = SfmlWrapper::render_rect;
         BackWrapper::render_point = SfmlWrapper::render_point;
         BackWrapper::key_pressed = SfmlWrapper::key_pressed;
+        BackWrapper::mouse_down = SfmlWrapper::mouse_down;
     }    
 }
 

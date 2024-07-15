@@ -4,6 +4,7 @@
 #include <mutex>
 #include <condition_variable>
 
+#include "Math.hpp"
 #include "World.hpp"
 
 
@@ -31,13 +32,14 @@ namespace BackWrapper {
     extern std::mutex mtx_render_callbacks;
     extern std::condition_variable cnd_render_callback;
     extern std::list<std::pair<RenderCallback,void*>> render_callbacks;
-
+    extern Vec2 mouse_pos;
 
 
     // callbacks
     extern  void (*init)();
     extern  void (*render)();
     extern  bool (*key_pressed)(int);
+    extern  bool (*mouse_down)(int);
     extern  RenderCallback render_rect;
     extern  RenderCallback render_point;
 
@@ -62,10 +64,12 @@ namespace BackWrapper {
     std::mutex mtx_render_callbacks;
     std::condition_variable cnd_render_callback;
     std::list<std::pair<RenderCallback,void*>> render_callbacks;
+    Vec2 mouse_pos;
 
     void (*init)();
     void (*render)();
     bool (*key_pressed)(int);
+    bool (*mouse_down)(int);
     RenderCallback render_rect;
     RenderCallback render_point;
 
