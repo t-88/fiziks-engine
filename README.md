@@ -1,6 +1,10 @@
 # Fiziks Engine
 A 2d basic physics engine built for edicational purposes 
 
+## Requirements
+- install sfml `sudo apt-get install libsfml-dev`
+
+
 
 ## Preview
 simple 2d box physics
@@ -10,6 +14,7 @@ simple 2d box physics
 very stable sim
 ---
 <center> <img width="800" src="./preview/very-stable.gif" alt="very stable" />  </center>  
+
 
 
 ## Todo
